@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pattern Gallery — frontend-design</title>
+<style>
+  /* ---- Tokens: light defaults ---------------------------------------- */
+  :root {
+    --font-display: "Oswald", "Arial Narrow", "Helvetica Neue", system-ui, sans-serif;
+    --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+    --bg: #f4f1ec;
+    --surface-1: #ffffff;
+    --surface-2: #e9e4da;
+    --text: #191612;
+    --text-muted: #5a544a;
+    --border: #d6cfc2;
+
+    --accent-primary: #1257c9;   /* affirmative / go */
+    --accent-primary-ink: #ffffff;
+    --accent-urgent: #b23410;    /* scarcity / deadline */
+    --accent-info: #1c6b4a;      /* guarantees / confirmation */
+
+    --shadow: 0 1px 2px rgb(0 0 0 / .08), 0 8px 24px rgb(0 0 0 / .06);
+    --radius: 14px;
+
+    --space-1: .25rem; --space-2: .5rem; --space-3: .75rem;
+    --space-4: 1rem;   --space-5: 1.5rem; --space-6: 2rem; --space-8: 3rem;
+    --gutter: 16px;
+    --maxw: 68rem;
+  }
+
+  /* Dark defaults — but a manual [data-theme] override must win, so guard it. */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #131110;
+      --surface-1: #201d1a;
+      --surface-2: #2c2823;
+      --text: #f3efe8;
+      --text-muted: #b3a89a;
+      --border: #3b352e;
+      --accent-primary: #6fa8ff;
+      --accent-primary-ink: #0a1220;
+      --accent-urgent: #ff8a5c;
+      --accent-info: #63c99a;
+      --shadow: 0 1px 2px rgb(0 0 0 / .5), 0 10px 30px rgb(0 0 0 / .45);
+    }
+  }
+  /* Explicit manual overrides */
+  :root[data-theme="dark"] {
+    --bg: #131110;
+    --surface-1: #201d1a;
+    --surface-2: #2c2823;
+    --text: #f3efe8;
+    --text-muted: #b3a89a;
+    --border: #3b352e;
+    --accent-primary: #6fa8ff;
+    --accent-primary-ink: #0a1220;
+    --accent-urgent: #ff8a5c;
+    --accent-info: #63c99a;
+    --shadow: 0 1px 2px rgb(0 0 0 / .5), 0 10px 30px rgb(0 0 0 / .45);
+  }
+  :root[data-theme="light"] {
+    --bg: #f4f1ec; --surface-1: #ffffff; --surface-2: #e9e4da;
+    --text: #191612; --text-muted: #5a544a; --border: #d6cfc2;
+    --accent-primary: #1257c9; --accent-primary-ink: #ffffff;
+    --accent-urgent: #b23410; --accent-info: #1c6b4a;
+  }
+
+  /* ---- Base ---------------------------------------------------------- */
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: var(--accent-primary); }
+  :focus-visible { outline: 3px solid var(--accent-primary); outline-offset: 2px; border-radius: 4px; }
+
+  .wrap { max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gutter); }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+
+  /* Type rhythm */
+  .eyebrow {
+    font: 600 .74rem/1 var(--font-sans); letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent-primary); margin: 0 0 var(--space-3);
+  }
+  .headline {
+    font-family: var(--font-display);
+    font-weight: 700; letter-spacing: .01em; line-height: 1.04;
+    font-size: clamp(1.9rem, 6vw, 3.2rem); text-transform: uppercase;
+    margin: 0 0 var(--space-3); text-wrap: balance;
+  }
+  .sub { color: var(--text-muted); max-width: 54ch; margin: 0 0 var(--space-5); }
+
+  section { padding-block: clamp(2.75rem, 7vw, 4.75rem); }
+  .section-label {
+    font: 600 .68rem/1 var(--font-sans); letter-spacing: .16em; text-transform: uppercase;
+    color: var(--text-muted); margin: 0 0 var(--space-5);
+    display: flex; align-items: center; gap: var(--space-3);
+  }
+  .section-label::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: .5rem;
+    font: 700 .95rem/1 var(--font-sans); text-decoration: none; cursor: pointer;
+    padding: .85rem 1.4rem; border-radius: 999px; border: 1px solid transparent;
+    min-height: 44px; transition: transform .12s ease, filter .12s ease, background .12s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn--primary { background: var(--accent-primary); color: var(--accent-primary-ink); }
+  .btn--primary:hover { filter: brightness(1.08); }
+  .btn--ghost { background: transparent; color: var(--accent-primary); border-color: var(--border); }
+  .btn--ghost:hover { background: var(--surface-2); }
+
+  /* ---- Top bar / theme toggle --------------------------------------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar .wrap { display: flex; align-items: center; justify-content: space-between; padding-block: .7rem; }
+  .brand { font-family: var(--font-display); font-weight: 700; letter-spacing: .04em;
+           text-transform: uppercase; font-size: 1.15rem; }
+  .brand span { color: var(--accent-primary); }
+  .theme-toggle {
+    font: 600 .82rem/1 var(--font-sans); cursor: pointer;
+    background: var(--surface-1); color: var(--text);
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: .55rem .9rem; min-height: 40px;
+  }
+  .theme-toggle:hover { background: var(--surface-2); }
+
+  /* ---- 1. Hero with gradient scrim ---------------------------------- */
+  .hero {
+    position: relative; min-height: 66svh; display: grid; align-items: end;
+    /* CSS-only "photo": layered gradients standing in for an image */
+    background:
+      radial-gradient(120% 90% at 78% 12%, #3a6db8 0%, transparent 55%),
+      radial-gradient(120% 120% at 12% 92%, #7a3410 0%, transparent 50%),
+      linear-gradient(135deg, #24303f, #10151c 70%);
+    color: #fff;
+  }
+  .hero::before {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(to top,
+      rgb(8 10 14 / .84) 0%, rgb(8 10 14 / .5) 40%, rgb(8 10 14 / 0) 74%);
+  }
+  .hero__content { position: relative; padding-block: clamp(2.5rem, 8vw, 5rem); }
+  .hero .eyebrow { color: #ffd9a8; }         /* legible accent on dark scrim */
+  .hero .sub { color: #e7e3dc; }
+  .hero__cta { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+
+  /* Risk-reversal chips */
+  .chips { display: flex; flex-wrap: wrap; gap: var(--space-2); list-style: none; padding: 0; margin: var(--space-4) 0 0; }
+  .chip {
+    display: inline-flex; align-items: center; gap: .4rem;
+    font: 600 .8rem/1 var(--font-sans);
+    border: 1px solid rgb(255 255 255 / .35); color: #fff;
+    border-radius: 999px; padding: .45rem .75rem; background: rgb(255 255 255 / .08);
+  }
+  .band--flat .chip { color: var(--text-muted); border-color: var(--border); background: transparent; }
+
+  /* ---- Countdown ----------------------------------------------------- */
+  .urgency {
+    display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4);
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-left: 4px solid var(--accent-urgent);
+    border-radius: var(--radius); padding: var(--space-4) var(--space-5); box-shadow: var(--shadow);
+  }
+  .countdown { display: flex; gap: var(--space-3); }
+  .countdown .unit { text-align: center; }
+  .countdown .num {
+    font-family: var(--font-display); font-weight: 700; font-size: 2.1rem; line-height: 1;
+    color: var(--accent-urgent); font-variant-numeric: tabular-nums; display: block;
+  }
+  .countdown .cap { font: 600 .62rem/1 var(--font-sans); letter-spacing: .12em;
+                    text-transform: uppercase; color: var(--text-muted); }
+  .price-step { margin: 0; color: var(--text); font-weight: 500; }
+  .price-step strong { color: var(--accent-urgent); }
+
+  /* ---- Stat row ------------------------------------------------------ */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); margin: 0; }
+  .stats > div { text-align: center; }
+  .stats dt {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: clamp(2.1rem, 7vw, 3.4rem); line-height: 1;
+    color: var(--accent-primary); font-variant-numeric: tabular-nums;
+  }
+  .stats dd { margin: var(--space-2) 0 0; font: 600 .68rem/1.25 var(--font-sans);
+              letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+
+  /* ---- Pricing ladder ------------------------------------------------ */
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); align-items: start; }
+  .tier {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: var(--space-5); box-shadow: var(--shadow);
+    position: relative;
+  }
+  .tier--featured { border: 2px solid var(--accent-primary); }
+  .tier__badge {
+    position: absolute; top: -.8rem; left: 50%; transform: translateX(-50%);
+    background: var(--accent-primary); color: var(--accent-primary-ink);
+    font: 700 .66rem/1 var(--font-sans); letter-spacing: .09em; text-transform: uppercase;
+    padding: .4rem .7rem; border-radius: 999px; white-space: nowrap;
+  }
+  .tier h3 { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .02em;
+             margin: 0 0 var(--space-2); font-size: 1.25rem; }
+  .tier .price { font-family: var(--font-display); font-size: 2.2rem; line-height: 1; margin: 0 0 var(--space-1); }
+  .tier .price small { font-family: var(--font-sans); font-size: .8rem; color: var(--text-muted); font-weight: 500; }
+  .tier ul { list-style: none; padding: 0; margin: var(--space-4) 0; display: grid; gap: var(--space-2); }
+  .tier li { font-size: .92rem; color: var(--text-muted); padding-left: 1.4rem; position: relative; }
+  .tier li::before { content: "✓"; position: absolute; left: 0; color: var(--accent-info); font-weight: 700; }
+  .tier .btn { width: 100%; justify-content: center; }
+
+  /* ---- Comparison table --------------------------------------------- */
+  .compare-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--radius); }
+  table.compare {
+    width: 100%; border-collapse: collapse; background: var(--surface-1);
+    border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; min-width: 460px;
+  }
+  .compare th, .compare td { padding: var(--space-3) var(--space-4); text-align: center; border-bottom: 1px solid var(--border); }
+  .compare thead th { font: 700 .82rem/1.2 var(--font-sans); letter-spacing: .04em; }
+  .compare th[scope="row"] { text-align: left; font-weight: 600; color: var(--text); }
+  .compare tbody td { color: var(--text-muted); }
+  .compare .is-rec { background: color-mix(in srgb, var(--accent-primary) 14%, transparent); color: var(--text); }
+  .compare thead th.is-rec { border-top: 3px solid var(--accent-primary); }
+  .compare .yes { color: var(--accent-info); font-weight: 700; }
+  .compare .no  { color: var(--text-muted); }
+
+  /* ---- Segmented control -------------------------------------------- */
+  .segmented { display: inline-flex; background: var(--surface-2); border-radius: 999px; padding: .28rem; gap: .2rem; }
+  .segmented button {
+    font: 600 .9rem/1 var(--font-sans); cursor: pointer; border: 0; background: transparent;
+    color: var(--text-muted); padding: .6rem 1.1rem; border-radius: 999px; min-height: 40px;
+  }
+  .segmented [aria-selected="true"] {
+    background: var(--surface-1); color: var(--text); box-shadow: 0 1px 2px rgb(0 0 0 / .18);
+  }
+  .panel { margin-top: var(--space-4); }
+  .panel[hidden] { display: none; }
+
+  /* ---- Testimonials + monogram avatars ------------------------------ */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: var(--space-5); box-shadow: var(--shadow);
+    display: flex; flex-direction: column; gap: var(--space-3);
+  }
+  .stars { color: #d99a1c; letter-spacing: .1em; font-size: 1rem; }
+  .card blockquote { margin: 0; font-size: .96rem; }
+  .who { display: flex; align-items: center; gap: var(--space-3); margin-top: auto; }
+  .avatar {
+    display: inline-grid; place-items: center; width: 2.6rem; height: 2.6rem; flex: none;
+    border-radius: 50%; color: #fff; font: 700 .95rem/1 var(--font-sans);
+    background: hsl(var(--h) 48% 38%);
+  }
+  .who .name { font-weight: 700; font-size: .9rem; }
+  .who .role { font-size: .78rem; color: var(--text-muted); }
+
+  /* ---- On-ramp ------------------------------------------------------- */
+  .onramp { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+
+  /* ---- Footer -------------------------------------------------------- */
+  .site-footer { background: var(--surface-2); border-top: 1px solid var(--border); color: var(--text); }
+  .site-footer .wrap { padding-block: var(--space-8); }
+  .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: var(--space-6); }
+  .foot-capture h3 { font-family: var(--font-display); text-transform: uppercase; margin: 0 0 var(--space-3); }
+  .foot-capture .row { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+  .foot-capture label { display: block; font-size: .88rem; color: var(--text-muted); margin-bottom: var(--space-2); }
+  .foot-capture input[type="email"] {
+    flex: 1 1 12rem; min-width: 0; padding: .75rem .9rem; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text); font: inherit;
+  }
+  .foot-nav h4 { font: 700 .72rem/1 var(--font-sans); letter-spacing: .12em; text-transform: uppercase;
+                 color: var(--text-muted); margin: 0 0 var(--space-3); }
+  .foot-nav ul { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); }
+  .foot-nav a { color: var(--text); text-decoration: none; font-size: .92rem; }
+  .foot-nav a:hover { color: var(--accent-primary); text-decoration: underline; }
+  .foot-meta {
+    display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; justify-content: space-between;
+    border-top: 1px solid var(--border); margin-top: var(--space-6); padding-top: var(--space-5);
+  }
+  .social, .pay-badges { list-style: none; padding: 0; margin: 0; display: flex; gap: var(--space-3); align-items: center; }
+  .social a {
+    display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
+    border: 1px solid var(--border); color: var(--text); text-decoration: none; font-weight: 700;
+  }
+  .social a:hover { background: var(--surface-1); }
+  .pay-badges li {
+    font: 700 .62rem/1 var(--font-sans); letter-spacing: .04em; padding: .4rem .55rem;
+    border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted); background: var(--surface-1);
+  }
+  .locale select {
+    font: inherit; font-size: .85rem; padding: .5rem .7rem; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text);
+  }
+  .copyright { color: var(--text-muted); font-size: .82rem; margin: var(--space-5) 0 0; }
+
+  /* ---- Scroll reveal ------------------------------------------------- */
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .55s ease, transform .55s ease; }
+  .reveal.is-in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .btn { transition: none; }
+  }
+
+  /* ---- Responsive ---------------------------------------------------- */
+  @media (max-width: 760px) {
+    .stats { grid-template-columns: repeat(3, 1fr); gap: var(--space-3); }
+    .tiers { grid-template-columns: 1fr; }
+    .tier--featured { order: -1; }
+    .cards { grid-template-columns: 1fr; }
+    .foot-grid { grid-template-columns: 1fr; gap: var(--space-5); }
+  }
+  @media (max-width: 460px) {
+    body { font-size: 16px; }
+    .stats { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">Moto<span>·</span>Craft</div>
+    <button class="theme-toggle" id="themeBtn" type="button" aria-pressed="false">
+      <span id="themeLabel">Dark mode</span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- 1 + 2 + 3 + 8: hero scrim, eyebrow→headline→sub→CTA, semantic accents, chips -->
+  <section class="hero" aria-labelledby="hero-h">
+    <div class="wrap hero__content">
+      <p class="eyebrow">Rider development program</p>
+      <h1 class="headline" id="hero-h">Ride faster with less fear</h1>
+      <p class="sub">A structured coaching program that builds real technique — not luck.
+        Train with a system used by riders who actually reach the podium.</p>
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="#pricing">Start training</a>
+        <a class="btn btn--ghost" href="#quiz" style="color:#fff;border-color:rgb(255 255 255 / .4)">Not sure? Take the fit quiz →</a>
+      </div>
+      <ul class="chips">
+        <li class="chip">🔒 Secure checkout</li>
+        <li class="chip">↩ 14-day refund</li>
+        <li class="chip">◷ Cancel anytime</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 4: countdown + price step -->
+  <section class="band--flat reveal" aria-labelledby="urg-h">
+    <div class="wrap">
+      <p class="section-label" id="urg-h">Enrollment closing</p>
+      <div class="urgency">
+        <div class="countdown" id="countdown" role="timer" aria-hidden="true">
+          <div class="unit"><span class="num" data-unit="days">--</span><span class="cap">Days</span></div>
+          <div class="unit"><span class="num" data-unit="hours">--</span><span class="cap">Hrs</span></div>
+          <div class="unit"><span class="num" data-unit="mins">--</span><span class="cap">Min</span></div>
+          <div class="unit"><span class="num" data-unit="secs">--</span><span class="cap">Sec</span></div>
+        </div>
+        <p class="price-step">
+          Fall cohort closes soon. Price rises to <strong>$399</strong>
+          on <time datetime="2026-10-16">Oct&nbsp;16</time> — lock in <strong>$299</strong> today.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5: big-number stat row -->
+  <section class="band--flat reveal" aria-labelledby="stat-h">
+    <div class="wrap">
+      <p class="section-label" id="stat-h">By the numbers</p>
+      <dl class="stats">
+        <div><dt>2,400+</dt><dd>Riders coached</dd></div>
+        <div><dt>17</dt><dd>Pro podiums</dd></div>
+        <div><dt>4.9/5</dt><dd>Average rating</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- 10: segmented control -->
+  <section class="band--flat reveal" aria-labelledby="seg-h">
+    <div class="wrap">
+      <p class="section-label" id="seg-h">Built for your level</p>
+      <h2 class="headline" style="font-size:clamp(1.5rem,4vw,2.2rem)">Pick where you're at</h2>
+      <div class="segmented" role="tablist" aria-label="Choose your level">
+        <button role="tab" id="tab-beg" aria-controls="panel-beg" aria-selected="true" type="button">Beginner</button>
+        <button role="tab" id="tab-adv" aria-controls="panel-adv" aria-selected="false" type="button">Advanced</button>
+      </div>
+      <div class="panel" id="panel-beg" role="tabpanel" aria-labelledby="tab-beg" tabindex="0">
+        <p class="sub">Master body position, braking, and cornering fundamentals with drills
+          you can run at any local track — no prior race experience needed.</p>
+      </div>
+      <div class="panel" id="panel-adv" role="tabpanel" aria-labelledby="tab-adv" tabindex="0" hidden>
+        <p class="sub">Sharpen race-craft: rut selection, scrub timing, and start-gate technique,
+          with weekly video breakdowns of your own laps.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6: good/better/best ladder -->
+  <section class="band--flat reveal" id="pricing" aria-labelledby="price-h">
+    <div class="wrap">
+      <p class="eyebrow">Plans</p>
+      <h2 class="headline" id="price-h" style="font-size:clamp(1.7rem,5vw,2.6rem)">Choose your commitment</h2>
+      <p class="sub">Start self-guided, step up to coaching, or go all-in with 1:1.</p>
+      <div class="tiers">
+        <article class="tier" aria-label="Self-guided plan">
+          <h3>Self-guided</h3>
+          <p class="price">$0<small> / forever</small></p>
+          <ul>
+            <li>Full video library</li>
+            <li>Community access</li>
+            <li>Training templates</li>
+          </ul>
+          <a class="btn btn--ghost" href="#">Start free</a>
+        </article>
+        <article class="tier tier--featured" aria-label="Coached plan, best value">
+          <span class="tier__badge">Best value</span>
+          <h3>Coached</h3>
+          <p class="price">$299<small> / cohort</small></p>
+          <ul>
+            <li>Everything in Self-guided</li>
+            <li>Weekly video feedback</li>
+            <li>Live group sessions</li>
+            <li>Structured 8-week plan</li>
+          </ul>
+          <a class="btn btn--primary" href="#">Enroll now</a>
+        </article>
+        <article class="tier" aria-label="One-to-one plan">
+          <h3>1:1 Elite</h3>
+          <p class="price">$899<small> / month</small></p>
+          <ul>
+            <li>Everything in Coached</li>
+            <li>Private coaching calls</li>
+            <li>Custom race calendar</li>
+          </ul>
+          <a class="btn btn--ghost" href="#">Apply</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7: honest comparison table -->
+  <section class="band--flat reveal" aria-labelledby="cmp-h">
+    <div class="wrap">
+      <p class="section-label" id="cmp-h">Honest comparison</p>
+      <div class="compare-scroll">
+        <table class="compare">
+          <thead>
+            <tr>
+              <th scope="col">Feature</th>
+              <th scope="col">Self-guided</th>
+              <th scope="col" class="is-rec">Coached ★</th>
+              <th scope="col">1:1 Elite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Video library</th>
+              <td><span class="yes" aria-label="Included">✓</span></td>
+              <td class="is-rec"><span class="yes" aria-label="Included">✓</span></td>
+              <td><span class="yes" aria-label="Included">✓</span></td></tr>
+            <tr><th scope="row">Weekly feedback</th>
+              <td><span class="no" aria-label="Not included">—</span></td>
+              <td class="is-rec"><span class="yes" aria-label="Included">✓</span></td>
+              <td><span class="yes" aria-label="Included">✓</span></td></tr>
+            <tr><th scope="row">Private coaching calls</th>
+              <td><span class="no" aria-label="Not included">—</span></td>
+              <td class="is-rec"><span class="no" aria-label="Not included">—</span></td>
+              <td><span class="yes" aria-label="Included">✓</span></td></tr>
+            <tr><th scope="row">Best for</th>
+              <td>Self-starters</td>
+              <td class="is-rec">Most riders</td>
+              <td>Racing full-time</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11: testimonials with monogram avatars + stars -->
+  <section class="band--flat reveal" aria-labelledby="test-h">
+    <div class="wrap">
+      <p class="section-label" id="test-h">What riders say</p>
+      <div class="cards">
+        <article class="card">
+          <div class="stars" aria-label="Rated 5 out of 5">★★★★★</div>
+          <blockquote>Cut two seconds off my lap in six weeks. The feedback was brutal and exactly what I needed.</blockquote>
+          <div class="who">
+            <span class="avatar" role="img" aria-label="Dana Reyes" style="--h:210">DR</span>
+            <div><div class="name">Dana Reyes</div><div class="role">Intermediate, TX</div></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="stars" aria-label="Rated 5 out of 5">★★★★★</div>
+          <blockquote>First structured plan I actually stuck with. Went from mid-pack to my first holeshot.</blockquote>
+          <div class="who">
+            <span class="avatar" role="img" aria-label="Marcus Bell" style="--h:150">MB</span>
+            <div><div class="name">Marcus Bell</div><div class="role">Novice, OR</div></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="stars" aria-label="Rated 5 out of 5">★★★★★</div>
+          <blockquote>The corner-entry drills alone were worth it. My confidence in ruts completely changed.</blockquote>
+          <div class="who">
+            <span class="avatar" role="img" aria-label="Priya Nair" style="--h:280">PN</span>
+            <div><div class="name">Priya Nair</div><div class="role">Advanced, CA</div></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9: low-commitment on-ramp -->
+  <section class="band--flat reveal" id="quiz" aria-labelledby="ramp-h">
+    <div class="wrap">
+      <p class="eyebrow">Not ready to enroll?</p>
+      <h2 class="headline" id="ramp-h" style="font-size:clamp(1.5rem,4vw,2.2rem)">Find your fit in 60 seconds</h2>
+      <p class="sub">Take the free quiz and get a personalized starting plan — no card, no commitment.</p>
+      <div class="onramp">
+        <a class="btn btn--primary" href="#pricing">Enroll now</a>
+        <a class="btn btn--ghost" href="#">Take the 60-second fit quiz →</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- 15: working footer -->
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <form class="foot-capture" onsubmit="return false">
+        <h3>Get the free training plan</h3>
+        <label for="foot-mail">Weekly drills and technique breakdowns in your inbox.</label>
+        <div class="row">
+          <input id="foot-mail" name="email" type="email" autocomplete="email" placeholder="you@email.com" required>
+          <button type="submit" class="btn btn--primary">Send it</button>
+        </div>
+      </form>
+      <nav class="foot-nav" aria-label="Program">
+        <h4>Program</h4>
+        <ul>
+          <li><a href="#pricing">Plans</a></li>
+          <li><a href="#">Video library</a></li>
+          <li><a href="#quiz">Fit quiz</a></li>
+          <li><a href="#">Coaching</a></li>
+        </ul>
+      </nav>
+      <nav class="foot-nav" aria-label="Company">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Refund policy</a></li>
+          <li><a href="#">Privacy</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="foot-meta">
+      <ul class="social" aria-label="Social media">
+        <li><a href="#" aria-label="MotoCraft on Instagram">IG</a></li>
+        <li><a href="#" aria-label="MotoCraft on YouTube">YT</a></li>
+        <li><a href="#" aria-label="MotoCraft on TikTok">TT</a></li>
+      </ul>
+      <ul class="pay-badges" aria-label="Accepted payments">
+        <li>VISA</li><li>MC</li><li>AMEX</li><li>APPLE PAY</li>
+      </ul>
+      <label class="locale">
+        <span class="sr-only">Language</span>
+        <select>
+          <option>English</option>
+          <option>Español</option>
+          <option>Français</option>
+        </select>
+      </label>
+    </div>
+    <p class="copyright">© 2026 MotoCraft Academy. A demo of the motopage pattern library.</p>
+  </div>
+</footer>
+
+<script>
+  /* ---- Theme toggle: manual override wins over OS preference ---------- */
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById('themeBtn');
+    var label = document.getElementById('themeLabel');
+    function current() {
+      var t = root.getAttribute('data-theme');
+      if (t === 'dark' || t === 'light') return t;
+      return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    function sync() {
+      var isDark = current() === 'dark';
+      label.textContent = isDark ? 'Light mode' : 'Dark mode';
+      btn.setAttribute('aria-pressed', String(isDark));
+    }
+    btn.addEventListener('click', function () {
+      root.setAttribute('data-theme', current() === 'dark' ? 'light' : 'dark');
+      sync();
+    });
+    sync();
+  })();
+
+  /* ---- Countdown to a real target timestamp -------------------------- */
+  (function () {
+    var el = document.getElementById('countdown');
+    if (!el) return;
+    var end = new Date('2026-10-15T23:59:00-05:00').getTime();
+    var out = {
+      days: el.querySelector('[data-unit="days"]'),
+      hours: el.querySelector('[data-unit="hours"]'),
+      mins: el.querySelector('[data-unit="mins"]'),
+      secs: el.querySelector('[data-unit="secs"]')
+    };
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+    function tick() {
+      var t = Math.max(0, end - Date.now());
+      out.days.textContent = Math.floor(t / 864e5);
+      out.hours.textContent = pad(Math.floor(t / 36e5) % 24);
+      out.mins.textContent = pad(Math.floor(t / 6e4) % 60);
+      out.secs.textContent = pad(Math.floor(t / 1e3) % 60);
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+
+  /* ---- Segmented control (tablist) ----------------------------------- */
+  (function () {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+    if (!tabs.length) return;
+    function select(tab) {
+      tabs.forEach(function (t) {
+        var selected = t === tab;
+        t.setAttribute('aria-selected', String(selected));
+        var panel = document.getElementById(t.getAttribute('aria-controls'));
+        if (panel) panel.hidden = !selected;
+      });
+    }
+    tabs.forEach(function (tab, i) {
+      tab.addEventListener('click', function () { select(tab); });
+      tab.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        e.preventDefault();
+        var next = e.key === 'ArrowRight' ? (i + 1) % tabs.length : (i - 1 + tabs.length) % tabs.length;
+        tabs[next].focus();
+        select(tabs[next]);
+      });
+    });
+  })();
+
+  /* ---- Scroll reveal (once), reduced-motion safe --------------------- */
+  (function () {
+    var items = document.querySelectorAll('.reveal');
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) {
+      items.forEach(function (el) { el.classList.add('is-in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12 });
+    items.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+</body>
+</html>

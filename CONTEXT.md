@@ -40,4 +40,8 @@ examples/pattern-gallery.html  standalone demo, no images
 ```
 
 ## Status
-See `TODO.md` for the live checklist. Current phase: build.
+**Round 1 shipped (2026-09-28).** All deliverables written, verified, committed, and pushed to `main`; skill symlinked into `~/.claude/skills/motopage`. See `TODO.md` for the ticked checklist with evidence.
+
+Verification highlights: all cross-links resolve; gallery is fully self-contained (no external images/CDN/fonts); WCAG AA passes in both themes (body 16:1, muted 6.6–8.1:1, accents 6.2–7.8:1). Browser render check was blocked by the sandbox loopback restriction; verified statically instead.
+
+Open question for next round: confirm scope — general 4-pillar design skill (current) vs. a narrower "build moto-style high-converting landing pages" skill.
